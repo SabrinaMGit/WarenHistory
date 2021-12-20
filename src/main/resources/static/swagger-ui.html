@@ -1,0 +1,30 @@
+<html lang="0">
+<head>
+    <meta charset="UTF-8">
+    <title>API Docs</title>
+    <link rel="stylesheet" type="text/css" href="/webjars/swagger-ui/3.36.2/swagger-ui.css">
+</head>
+<body>
+<div id="swagger-ui"></div>
+<script src="/webjars/swagger-ui/3.36.2/swagger-ui-bundle.js"></script>
+<script src="/webjars/swagger-ui/3.36.2/swagger-ui-standalone-preset.js"></script>
+<script>
+    window.onload = function () {
+        window.ui = SwaggerUIBundle({
+            urls: [
+                {url: "RestApiSwagger.json", name: "RestApiSwagger"}
+            ],
+            dom_id: '#swagger-ui',
+            presets: [
+                SwaggerUIBundle.presets.apis,
+                SwaggerUIStandalonePreset
+            ],
+            plugins: [
+                SwaggerUIBundle.plugins.DownloadUrl
+            ],
+            layout: "StandaloneLayout"
+        })
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,352 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is a documentation of interfaces provided by the Intellipack project",
+    "version": "0.4.0",
+    "title": "Intelli-Pack"
+  },
+  "basePath": "/api",
+  "schemes": [
+    "https"
+  ],
+  "paths": {
+    "/access": {
+      "get": {
+        "tags": [
+          "Access Controller"
+        ],
+        "summary": "Return the product data for the requested item.",
+        "description": "This is the interface between the Dashboard/UI and EPCIS",
+        "operationId": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "digitalLink",
+            "in": "query",
+            "description": "DigitalLink of the requested item with GTIN and serial number.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item found and accessible data collected",
+            "schema": {
+              "$ref": "#/definitions/ProductData"
+            }
+          },
+          "400": {
+            "description": "Bad request. Most likely a malformed GTIN.",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "No data found for this ID.",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error. Check the error message for details.",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/history/gtin/{gtin}/ser/{ser}": {
+      "get": {
+        "tags": [
+          "Access Controller"
+        ],
+        "summary": "Return the Product event history data for the requested item.",
+        "description": "This is the interface between the Dashboard/UI and EPCIS",
+        "operationId": "",
+        "consumes": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "gtin",
+            "in": "path",
+            "description": "Global Trade Item Number of the requested item.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ser",
+            "in": "path",
+            "description": "Serialisierte Number of the requested item.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Item found and accessible data collected",
+            "schema": {
+              "$ref": "#/definitions/ProductHistoryData"
+            }
+          },
+          "400": {
+            "description": "Bad request. DigitalLink format is not equal with https://id.intelli-pack.de/01/04016623487360/21/123456. GTIN length must be 14.",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          },
+          "404": {
+            "description": "No data found for this digitalLink.",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          },
+          "500": {
+            "description": "Internal Server Error. Check the error message for details.",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/capture": {
+      "put": {
+        "tags": [
+          "Capture Controller"
+        ],
+        "summary": "Capture Application",
+        "description": "Validate the given EPCIS events and forward them to the EPCIS repository.",
+        "operationId": "",
+        "consumes": [
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "",
+            "description": "EPCIS conformal XML document containing the Intellipack extensions.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad request. Most likely a malformed Epcis Document.",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error. Check the error message for details.",
+            "schema": {
+              "$ref": "#/definitions/GenericApiResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic"
+    }
+  },
+  "security": [
+    {
+      "basicAuth": []
+    }
+  ],
+  "definitions": {
+    "GenericApiResponse": {
+      "type": "object",
+      "description": "Generic response including a message and further information for debugging purposes.",
+      "properties": {
+        "message": {
+          "type": "string",
+          "example": "Specific error message",
+          "description": "Specific error message. Required if the status is not 2xx."
+        },
+        "path": {
+          "type": "string",
+          "example": "/",
+          "description": "The requested path."
+        },
+        "reason": {
+          "type": "string",
+          "example": "Ok",
+          "description": "Standard human readable reason for the HTTP status code."
+        },
+        "status": {
+          "type": "integer",
+          "example": "xxx",
+          "description": "Same code as returned in the HTTP header. Repeated here for logging/debugging purposes."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Timestamp of response generation."
+        }
+      }
+    },
+    "ProductData": {
+      "type": "object",
+      "properties": {
+        "datenquelle": {
+          "type": "string",
+          "description": "",
+          "example": "Wolf Qualitätskontrolle"
+        },
+        "sgtin": {
+          "type": "string",
+          "description": "Serialisierte Global Trade Item Number of the requested item.",
+          "example": "01/04014116000003/21/0221T4YE"
+        },
+        "produktbezeichnung": {
+          "type": "string",
+          "description": "The name of the product.",
+          "example": "Original Thueringer Rostbratwurst"
+        },
+        "produktionscharge": {
+          "type": "integer",
+          "description": "",
+          "example": "4711"
+        },
+        "verpackungsdatum": {
+          "type": "string",
+          "format": "date",
+          "description": "The date on which the product was packed.",
+          "example": "2021-06-09T08:56:20+0002"
+        },
+        "mhd": {
+          "type": "string",
+          "format": "date",
+          "description": "mhd stands for Mindesthaltbarkeitsdatum.",
+          "example": "2021-03-26T00:00:00.000Z"
+        },
+        "aufladewertTTI": {
+          "type": "integer",
+          "example": "58"
+        },
+        "zieltemperatur": {
+          "type": "integer",
+          "description": "Target temperature is given in celsius (°).",
+          "example": "7"
+        },
+        "p1": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p2": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p3": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p4": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p5": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p6": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p7": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p8": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p9": {
+          "type": "integer",
+          "example": "0"
+        },
+        "p10": {
+          "type": "integer",
+          "example": "0"
+        },
+        "zeitstempel": {
+          "type": "string",
+          "example": "20210301_204823"
+        },
+        "laenge": {
+          "type": "string",
+          "format": "double",
+          "description": "Equal with Longitude",
+          "example": "6,906"
+        },
+        "breite": {
+          "type": "string",
+          "format": "double",
+          "description": "Equal with Latitude",
+          "example": "50,834"
+        },
+        "rot": {
+          "type": "integer",
+          "description": "The colour of the shelf life product.",
+          "example": "24"
+        },
+        "grün": {
+          "type": "integer",
+          "description": "The colour of the shelf life product.",
+          "example": "30"
+        },
+        "blau": {
+          "type": "integer",
+          "description": "The colour of the shelf life product.",
+          "example": "20"
+        },
+        "erwarteteTemperatur": {
+          "type": "integer",
+          "description": "The expected temperature of the product.",
+          "example": "10"
+        },
+        "resthaltbarkeit": {
+          "type": "integer",
+          "description": "The remaining shelf life of the product",
+          "example": "20"
+        }
+      }
+    },
+    "ProductHistoryData": {
+      "description": "Product History as a Fame to be embedded",
+      "example": "HTML representation of the history of..."
+    }
+  }
+}

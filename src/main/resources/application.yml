@@ -1,0 +1,35 @@
+app:
+  base-url: http://localhost:${server.port:8080}
+
+epcat:
+    url: http://localhost:9080
+    connection-timeout-in-seconds: 5
+    read-timeout-in-second: 5
+    max-number-of-cache-uses: 120
+    cache-timeout-seconds: 60
+
+spring:
+  jpa:
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+    database: postgresql
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  resources.cache.cachecontrol.max-age: 86400 # 1d
+  servlet.multipart:
+    max-file-size: 2MB
+    max-request-size: 3MB
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:postgresql://localhost:5433/postgres
+    username: postgres
+    password: postgres
+  output.ansi.enabled: ALWAYS
+  flyway:
+    locations:
+      - classpath:db/migration
+      - filesystem:./sql
+

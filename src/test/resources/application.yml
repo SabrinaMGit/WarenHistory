@@ -1,0 +1,25 @@
+app:
+  base-url: http://localhost:${server.port:8080}
+spring:
+  jpa:
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+    database: postgresql
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+  resources.cache.cachecontrol.max-age: 86400 # 1d
+  servlet.multipart:
+    max-file-size: 2MB
+    max-request-size: 3MB
+  thymeleaf:
+    cache: false
+  datasource:
+    url: jdbc:tc:postgresql:11.1:///databasename
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  flyway:
+    baselineOnMigrate: true
+    validateOnMigrate: false
+epcat:
+  url: http://localhost
